@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using TicTacToe.Enums;
 namespace TicTacToe
 {
     internal static class Gamechecker
@@ -18,7 +18,7 @@ namespace TicTacToe
         }
         public static bool IsValidLine(PictureBox pb, PictureBox[,] pbs, Func<int, int, (int, int)> nextIndex)
         {
-            (int x, int y) = GetIndex(pb, Form1.gameSize);
+            (int x, int y) = GetIndex(pb, Form1.GameSize);
             var lastChoice = Form1.GetPlayerChoiceFromPictureBox(pb);
             var currentChoice = lastChoice;
             int i = x;
@@ -31,36 +31,36 @@ namespace TicTacToe
             return (x, y) == (i, j);
         }
         public static bool IsValidVerticalLine(PictureBox pb, PictureBox[,] pbs) =>
-                                                       IsValidLine(pb, pbs, (x, y) => ((x + 1) % Form1.gameSize, y));
+                                                       IsValidLine(pb, pbs, (x, y) => ((x + 1) % Form1.GameSize, y));
 
 
         public static bool IsValidHorizontalLine(PictureBox pb, PictureBox[,] pbs) =>
-                                                        IsValidLine(pb, pbs, (x, y) => (x, (y + 1) % Form1.gameSize));
+                                                        IsValidLine(pb, pbs, (x, y) => (x, (y + 1) % Form1.GameSize));
         public static bool IsValidNormalDiagonal(PictureBox pb, PictureBox[,] pbs)
         {
-            (int i, int j) = GetIndex(pb, Form1.gameSize);
+            (int i, int j) = GetIndex(pb, Form1.GameSize);
             if (i != j)
                 return false;
-            return IsValidLine(pb, pbs, (x, y) => ((x + 1) % Form1.gameSize, (y + 1) % Form1.gameSize));
+            return IsValidLine(pb, pbs, (x, y) => ((x + 1) % Form1.GameSize, (y + 1) % Form1.GameSize));
         }
         public static bool IsValidAntiDiagonal(PictureBox pb, PictureBox[,] pbs)
         {
-            (int i, int j) = GetIndex(pb, Form1.gameSize);
-            if (i + j !=Form1.gameSize-1)
+            (int i, int j) = GetIndex(pb, Form1.GameSize);
+            if (i + j !=Form1.GameSize-1)
                 return false;
-            return IsValidLine(pb, pbs, (x, y) => (((x - 1) % Form1.gameSize + Form1.gameSize) % Form1.gameSize, (y + 1) % Form1.gameSize));
+            return IsValidLine(pb, pbs, (x, y) => (((x - 1) % Form1.GameSize + Form1.GameSize) % Form1.GameSize, (y + 1) % Form1.GameSize));
         }
-        public static bool CheckGame(PictureBox pb, PictureBox[,] pbs)
+        public static GridColoringType CheckGame(PictureBox pb, PictureBox[,] pbs)
         {
             if (IsValidVerticalLine(pb, pbs))
-                return true;
+                return GridColoringType.Vertical;
             if (IsValidHorizontalLine(pb, pbs))
-                return true;
+                return GridColoringType.Horizontal;
             if (IsValidNormalDiagonal(pb, pbs))
-                return true;
+                return GridColoringType.Diagonal;
             if (IsValidAntiDiagonal(pb, pbs))
-                return true;
-            return false;
+                return GridColoringType.AntiDiagonal;
+            return GridColoringType.None;
         }
 
     }

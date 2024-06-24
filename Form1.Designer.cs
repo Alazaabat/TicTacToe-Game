@@ -282,8 +282,8 @@ namespace TicTacToe
         private PictureBox [,] pictureBoxes;
         private Turn currentPlayer;
         private Button lblRestart;
-        int picked;
-        public static int gameSize;
+        int pickedCount;
+        public static int GameSize;
     }
 }
 

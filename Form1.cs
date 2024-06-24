@@ -25,7 +25,7 @@ namespace TicTacToe
                {pb4,pb5,pb6},
                {pb7,pb8,pb9}
                };
-            gameSize = 3;
+            GameSize = 3;
         }
         public void InitPictureBoxes()
             {
@@ -34,6 +34,7 @@ namespace TicTacToe
                 pb.Image = Properties.Resources.QuestionMark;
                 pb.SizeMode = PictureBoxSizeMode.Zoom;
                 pb.Tag = PlayerChoice.None;
+                pb.BackColor = default;
             }
         }
 
@@ -71,7 +72,7 @@ namespace TicTacToe
         public static PlayerChoice GetPlayerChoiceFromPictureBox(PictureBox pb) => (PlayerChoice)pb.Tag; 
         private PlayerChoice GetPlayerChoice() => currentPlayer == Turn.Player_1 ?
                                                  PlayerChoice.X : PlayerChoice.O;
-        private void IncrementPickedCounter() => picked++;
+        private void IncrementPickedCounter() => pickedCount++;
         private void PickPictureBox(PictureBox pb,PlayerChoice playerChoice) => pb.Tag = playerChoice;
         private void SwitchToPlayer1()
         {
@@ -125,8 +126,6 @@ namespace TicTacToe
         private void Win()
         {
             this.lblWinnerAnswer.ForeColor = Color.Red;
-            this.lblWinnerAnswer.Text = FormatString(this.currentPlayer.ToString());
-            this.GameFinishMessageBox((GameWinner)(currentPlayer));
         }
         private void InProgress() => this.lblWinnerAnswer.ForeColor = Color.Green;
         private void SwitchGameWinner(GameWinner gameWinner)
@@ -158,7 +157,7 @@ namespace TicTacToe
             SwitchGameWinner(GameWinner.In_Progress);
             InitPictureBoxes();
             AttachPicturBoxChangedToEvents();
-            picked = 0;
+            pickedCount = 0;
         }
 
        
@@ -174,11 +173,15 @@ namespace TicTacToe
             pb.Image = GetCurrentPlayerImage(); 
             PickPictureBox(pb,GetPlayerChoice());
             IncrementPickedCounter();
-            bool thereIsWinner = Gamechecker.CheckGame(pb, this.pictureBoxes);
-            if (thereIsWinner)
-                Win();
-            else if (picked == Math.Pow(gameSize,2))
-                Draw();
+            var WinType = Gamechecker.CheckGame(pb, this.pictureBoxes);
+            if (WinType != GridColoringType.None)
+            {
+                SwitchGameWinner((GameWinner)currentPlayer);
+                Grid.ColorGrid(pb, this.pictureBoxes, WinType);
+                GameFinishMessageBox((GameWinner)currentPlayer);
+            }
+            else if (pickedCount == Math.Pow(GameSize, 2))
+                SwitchGameWinner(GameWinner.Draw);
             else
                 UpdateCurrentPlayer();
 
